@@ -1,5 +1,9 @@
 {
-	"token": "MTM1ODkwNzU3NzAwMTU3NDY0NQ.GJ46lP.SEs_OujhJAd37-HGy1lyzg1UjX98DX55DIkcJ8",
+	"token": "MTM1OTY4NjE3MDA4NjIxNTc3Mg.GZw3Rp.8_dBJ6VZG6lOCFXQFcBdbk8tFxwUlHI7fRqT6g",
 	"clientId": "1359686170086215772",
-	"guildId": "1359658443790745600"
+	"guildId": "1359658443790745600",
+	"checkInterval": 60000,
+	"animesDeseados" : ["Kusuriya no Hitorigoto 2nd Season", "Enn Enn no Shouboutai San no Shou", 
+				"WIND BREAKER Season 2", "Mobile Suit Gundam GQuuuuuuX", "Tu Bian Ying Xiong X",
+				"Chibzenji"]
 }

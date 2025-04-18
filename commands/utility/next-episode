@@ -1,0 +1,56 @@
+const { Client, GatewayIntentBits } = require('discord.js');
+const Parser = require('rss-parser');
+const config = require('./config.json');
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+const parser = new Parser();
+
+let lastGuids = new Set();
+
+async function checkFeed() {
+  try {
+    const feed = await parser.parseURL('https://www.livechart.me/feeds/episodes');
+    const nuevosEpisodios = feed.items.filter(item => {
+      const titulo = item.title.toLowerCase();
+      const esDeseado = config.animesDeseados.some(nombre =>
+        titulo.includes(nombre.toLowerCase())
+      );
+      return esDeseado;
+     // return !lastGuids.has(item.guid) && esDeseado;
+    });
+
+    if (nuevosEpisodios.length > 0) {
+      const canal = await client.channels.fetch(config.channelId);
+      for (const episodio of nuevosEpisodios) {
+        const embed = {
+          title: episodio.title,
+          url: episodio.link,
+          description: episodio.category || 'Sin categoría',
+          image: {
+            url: episodio.enclosure?.url || episodio['media:thumbnail']?.url,
+          },
+          timestamp: new Date(episodio.pubDate),
+        };
+
+        await canal.send({ content: '🎬 ¡Nuevo episodio disponible!', embeds: [embed] });
+        lastGuids.add(episodio.guid);
+      }
+
+      // Mantener solo los últimos 50 guids
+      if (lastGuids.size > 20) {
+        lastGuids = new Set(Array.from(lastGuids).slice(-20));
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error al revisar el feed:', error);
+  }
+}
+
+client.once('ready', () => {
+  console.log(`🤖 Conectado como ${client.user.tag}`);
+  checkFeed();
+  console.log('Nuevos episodios revisados.', nuevosEpisodios.map(ep => ep.title));
+  setInterval(checkFeed, config.checkInterval);
+});
+
+client.login(config.token);
